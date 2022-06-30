@@ -40,7 +40,7 @@ function App() {
     const handlerOnClickAddPost = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault(); //оставить sumbit
         if (inputPost.desc !== '' && inputPost.title !== '') {
-            setPost(prev => [...prev, {...inputPost, isDone: false, raiting: 0 ,id: Date.now()}])
+            setPost(prev => [...prev, {...inputPost, isDone: false, raiting: 0, id: Date.now()}])
         }
         setInputPost(prev => ({...prev, title: '', desc: ''}))
 
@@ -48,21 +48,21 @@ function App() {
     const handlerOnPressAddPost = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             if (inputPost.desc !== '' && inputPost.title !== '') {
-                setPost(prev => [...prev, {...inputPost, isDone: false,raiting: 0, id: Date.now()}])
+                setPost(prev => [...prev, {...inputPost, isDone: false, raiting: 0, id: Date.now()}])
             }
             setInputPost(prev => ({...prev, title: '', desc: ''}))
         }
     }
     const handlerOnChangeCheckbox = (id: number) => {
         setPost(prev => prev.map(item => {
-            if(item.id === id) return {...item, isDone: !item.isDone}
+            if (item.id === id) return {...item, isDone: !item.isDone}
             return item
         }))
     }
     const handlerOnClickChangeRaiting = (id: number, value: number) => {
         console.log(value)
         setPost(prev => prev.map(item => {
-            if(item.id === id) return {...item, raiting: value}
+            if (item.id === id) return {...item, raiting: value}
             return item
         }))
 
@@ -71,15 +71,15 @@ function App() {
         setSearchQuery(e.target.value)
     }
 
-    const filtredPosts = useMemo(()=>{
+    const filtredPosts = useMemo(() => {
         console.log('Отработала сортировка')
         if (filter === 'Active') return posts.filter(i => !i.isDone)
         if (filter === 'Completed') return posts.filter(i => i.isDone)
         return posts
-    },[filter, posts])
-    const filtredAndSearchPosts =  useMemo(() => {
+    }, [filter, posts])
+    const filtredAndSearchPosts = useMemo(() => {
         return filtredPosts.filter(item => item.title.toLowerCase().includes(searchQuery))
-    },[searchQuery, filtredPosts])
+    }, [searchQuery, filtredPosts])
     const removePost = (id: number) => {
         setPost(prev => prev.filter(item => item.id !== id))
     }
@@ -119,17 +119,12 @@ function App() {
                 />
 
             </form>
-            {posts.length > 0 ?
-                <PostList
-                    posts={filtredAndSearchPosts}
-                    onClick={removePost}
-                    handlerOnChangeCheckbox={handlerOnChangeCheckbox}
-                    handlerOnClickChangeRaiting={handlerOnClickChangeRaiting}
-                />
-                :
-                <h1 style={{textAlign: "center"}}>Пусто!</h1>
-            }
-
+            <PostList
+                posts={filtredAndSearchPosts}
+                onClick={removePost}
+                handlerOnChangeCheckbox={handlerOnChangeCheckbox}
+                handlerOnClickChangeRaiting={handlerOnClickChangeRaiting}
+            />
         </div>
     );
 }

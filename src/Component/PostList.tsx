@@ -10,6 +10,12 @@ interface IPostList {
 }
 
 export const PostList: React.FC<IPostList> = ({posts, onClick, handlerOnChangeCheckbox, handlerOnClickChangeRaiting}) => {
+
+    if(posts.length < 1) {
+        return (
+            <h1 style={{textAlign: "center"}}>Пусто!</h1>
+        )
+    }
     return (
         <div>
             {posts.map(item => <PostItem
