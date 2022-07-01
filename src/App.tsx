@@ -5,6 +5,8 @@ import {PostFilter} from "./Component/Post/PostFilter/PostFilter";
 import {PostCreate} from "./Component/Post/PostCreate/PostCreate";
 import {Modal} from "./Component/UI/Modal/Modal";
 import {MyButton} from "./Component/UI/Button/MyButton";
+import {MyInput} from "./Component/UI/Input/MyInput";
+import {NewPost} from "./Component/NewPost";
 
 export type postTypes = {
     id: number,
@@ -31,6 +33,7 @@ function App() {
     ])
     const [filters, setFilters] = useState<filterTypesProps>({filter: '', searchQuery: ''});
     const [visible, setVisible] = useState<boolean>(false)
+    const [isPosting, setPosting] = useState<boolean>(false)
 
     const handlerOnChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilters({...filters, filter: e.target.value})
@@ -77,6 +80,10 @@ function App() {
     const handlerOnChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilters({...filters, searchQuery: e.target.value})
     }
+    const handlerOnClickNewPost = () => {
+        alert('HI')
+        setPosting(true)
+    }
     const removePost = (id: number) => {
         setPost(prev => prev.filter(item => item.id !== id))
     }
@@ -93,9 +100,10 @@ function App() {
 
     return (
         <div className="App">
-            <MyButton onClick={handlerOnClickVisibleStatus}>
-                Создать
-            </MyButton>
+            {/*<MyButton onClick={handlerOnClickVisibleStatus}>*/}
+            {/*    Создать*/}
+            {/*</MyButton>*/}
+        <NewPost isPosting={isPosting} onClick={handlerOnClickNewPost}/>
             <Modal visible={visible} handlerOnClickVisibleStatus={handlerOnClickVisibleStatus}>
                 <PostCreate
                     title={inputPost.title}
