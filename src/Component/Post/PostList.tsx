@@ -1,6 +1,6 @@
 import React from 'react';
-import {PostItem} from "./PostItem";
-import {postTypes} from "../App";
+import {PostItem} from "./PostItem/PostItem";
+import {postTypes} from "../../App";
 
 interface IPostList {
     posts: postTypes[],

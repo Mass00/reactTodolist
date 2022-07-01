@@ -1,0 +1,23 @@
+.input {
+    margin-right: 10px;
+}
+.stars {
+    display: flex;
+    /*position: absolute;*/
+    /*top: 25px;*/
+    /*left: 15px;*/
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+}
+.post__btn {
+    display: block;
+}
+.post {
+    display: flex;
+    padding: 15px;
+    border: 2px solid green;
+    margin-top: 15px;
+    justify-content: space-between;
+    align-items: center;
+}

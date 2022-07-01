@@ -1,9 +1,10 @@
 import React, {useMemo, useState} from 'react';
 import './App.css';
-import {PostList} from "./Component/PostList";
+import {PostList} from "./Component/Post/PostList";
+import {PostFilter} from "./Component/Post/PostFilter/PostFilter";
+import {PostCreate} from "./Component/Post/PostCreate/PostCreate";
+import {Modal} from "./Component/UI/Modal/Modal";
 import {MyButton} from "./Component/UI/Button/MyButton";
-import {MyInput} from "./Component/UI/Input/MyInput";
-import MySelect from "./Component/UI/Select/MySelect";
 
 export type postTypes = {
     id: number,
@@ -16,6 +17,10 @@ type postValueTypes = {
     title: string,
     desc: string
 }
+type filterTypesProps = {
+    filter: string,
+    searchQuery: string
+}
 
 function App() {
     const [inputPost, setInputPost] = useState<postValueTypes>({title: '', desc: ''})
@@ -24,12 +29,11 @@ function App() {
         {id: 2, title: 'HTML&CSS', desc: 'Учите дети HTML&CSS', isDone: false, raiting: 0},
         {id: 3, title: 'React TS', desc: 'Учите дети React TS', isDone: false, raiting: 2}
     ])
-    const [filter, setFilter] = useState<string>('All');
-    const [searchQuery, setSearchQuery] = useState<string>('')
-
+    const [filters, setFilters] = useState<filterTypesProps>({filter: '', searchQuery: ''});
+    const [visible, setVisible] = useState<boolean>(false)
 
     const handlerOnChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilter(e.target.value)
+        setFilters({...filters, filter: e.target.value})
     }
     const handlerOnChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputPost(prev => ({...prev, title: e.target.value}))
@@ -43,7 +47,7 @@ function App() {
             setPost(prev => [...prev, {...inputPost, isDone: false, raiting: 0, id: Date.now()}])
         }
         setInputPost(prev => ({...prev, title: '', desc: ''}))
-
+        setVisible(!visible)
     }
     const handlerOnPressAddPost = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -51,6 +55,7 @@ function App() {
                 setPost(prev => [...prev, {...inputPost, isDone: false, raiting: 0, id: Date.now()}])
             }
             setInputPost(prev => ({...prev, title: '', desc: ''}))
+            setVisible(!visible)
         }
     }
     const handlerOnChangeCheckbox = (id: number) => {
@@ -59,8 +64,10 @@ function App() {
             return item
         }))
     }
+    const handlerOnClickVisibleStatus = () => {
+        setVisible(!visible)
+    }
     const handlerOnClickChangeRaiting = (id: number, value: number) => {
-        console.log(value)
         setPost(prev => prev.map(item => {
             if (item.id === id) return {...item, raiting: value}
             return item
@@ -68,57 +75,43 @@ function App() {
 
     }
     const handlerOnChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value)
+        setFilters({...filters, searchQuery: e.target.value})
+    }
+    const removePost = (id: number) => {
+        setPost(prev => prev.filter(item => item.id !== id))
     }
 
     const filtredPosts = useMemo(() => {
         console.log('Отработала сортировка')
-        if (filter === 'Active') return posts.filter(i => !i.isDone)
-        if (filter === 'Completed') return posts.filter(i => i.isDone)
+        if (filters.filter === 'Active') return posts.filter(i => !i.isDone)
+        if (filters.filter === 'Completed') return posts.filter(i => i.isDone)
         return posts
-    }, [filter, posts])
+    }, [filters.filter, posts])
     const filtredAndSearchPosts = useMemo(() => {
-        return filtredPosts.filter(item => item.title.toLowerCase().includes(searchQuery))
-    }, [searchQuery, filtredPosts])
-    const removePost = (id: number) => {
-        setPost(prev => prev.filter(item => item.id !== id))
-    }
-    //ololo
+        return filtredPosts.filter(item => item.title.toLowerCase().includes(filters.searchQuery))
+    }, [filters.searchQuery, filtredPosts])
 
     return (
         <div className="App">
-            <form>
-                <div className="input">
-
-                    <MyInput
-                        type="text"
-                        placeholder='...'
-                        value={inputPost.title}
-                        onChange={e => handlerOnChangeTitle(e)}
-                        onKeyDown={e => handlerOnPressAddPost(e)}
-                    />
-                    <MyInput
-                        type="text"
-                        placeholder='...'
-                        value={inputPost.desc}
-                        onChange={e => handlerOnChangeDesc(e)}
-                        onKeyDown={e => handlerOnPressAddPost(e)}
-                    />
-                    <MyButton onClick={handlerOnClickAddPost}>Отправить</MyButton>
-                </div>
-                <MyInput type={'text'}
-                         placeholder={'Поиск...'}
-                         value={searchQuery}
-                         onChange={e => handlerOnChangeSearchQuery(e)}
+            <MyButton onClick={handlerOnClickVisibleStatus}>
+                Создать
+            </MyButton>
+            <Modal visible={visible} handlerOnClickVisibleStatus={handlerOnClickVisibleStatus}>
+                <PostCreate
+                    title={inputPost.title}
+                    desc={inputPost.desc}
+                    handlerOnClickAddPost={handlerOnClickAddPost}
+                    handlerOnChangeTitle={handlerOnChangeTitle}
+                    handlerOnChangeDesc={handlerOnChangeDesc}
+                    handlerOnPressAddPost={handlerOnPressAddPost}
                 />
-                <MySelect
-                    options={['All', 'Active', 'Completed']}
-                    default={'Сортировка'}
-                    onChange={handlerOnChangeFilter}
+            </Modal>
 
-                />
-
-            </form>
+            <PostFilter
+                searchQuery={filters.searchQuery}
+                handlerOnChangeFilter={handlerOnChangeFilter}
+                handlerOnChangeSearchQuery={handlerOnChangeSearchQuery}
+            />
             <PostList
                 posts={filtredAndSearchPosts}
                 onClick={removePost}
